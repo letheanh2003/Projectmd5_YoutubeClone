@@ -12,6 +12,7 @@ public class ChannelRequest {
     private Long channel_id;
     private String chanel_name;
     private Date create_at;
+    private int subscription;
     private int statusCode;
     private boolean status;
     private Long user;

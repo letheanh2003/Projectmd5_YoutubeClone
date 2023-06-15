@@ -15,9 +15,6 @@ public class Subscription {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(name = "is_subscribed")
-    private boolean isSubscribed;
-
     @ManyToOne
     @JoinColumn(name = "user_id")
     private Users user;

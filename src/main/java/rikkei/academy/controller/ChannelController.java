@@ -41,6 +41,7 @@ public class ChannelController {
         if (channelService.existsChannelByUser(users)) {
             return ResponseEntity.badRequest().body(new ResponseMessage("User already has a channel"));
         }
+
         Channel channel = Channel.builder()
                 .chanel_name(channelRequest.getChanel_name())
                 .user(users)

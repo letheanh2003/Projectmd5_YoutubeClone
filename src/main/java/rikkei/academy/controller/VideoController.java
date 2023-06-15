@@ -108,66 +108,6 @@ public class VideoController {
         return ResponseEntity.ok(new ResponseMessage("Delete successfully"));
     }
 
-    //     tang luot likes views
-//    @PutMapping("/increase_likes/{id}")
-//    public ResponseEntity<?> increase(@PathVariable Long id) {
-//        Videos update = videoService.findById(id);
-//        if (update != null) {
-//            update.setLike(update.getLike() + 1);
-//            videoService.save(update);
-//            return ResponseEntity.ok(new ResponseMessage("You like success videos"));
-//        }
-//        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Video not found.");
-//    }
-//
-//    // bỏ đi lượt like của mình
-//    @PutMapping("/decrease_likes/{id}")
-//    public ResponseEntity<?> decrease_likes(@PathVariable Long id) {
-//        Videos update = videoService.findById(id);
-//        if (update != null) {
-//            update.setLike(update.getLike() - 1);
-//            videoService.save(update);
-//            return ResponseEntity.ok(new ResponseMessage("You unliked the video"));
-//        }
-//        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Video not found.");
-//    }
-//
-//    // dislike
-//    @PutMapping("/decrease_disLikes/{id}")
-//    public ResponseEntity<?> decrease_disLikes(@PathVariable Long id) {
-//        Videos update = videoService.findById(id);
-//        if (update != null) {
-////            videos.setVideo_id(update.getVideo_id());
-//            update.setDisLikes(update.getDisLikes() + 1);
-//            videoService.save(update);
-//            return ResponseEntity.ok(new ResponseMessage("You have dislikes the video"));
-//        }
-//        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Video not found.");
-//    }
-//    @GetMapping("/{id}")
-//    public ResponseEntity<?> findLikeByVideoId(@PathVariable Long id) {
-//        Long likeCount = likesService.countLikesByVideoId(id);
-//        return ResponseEntity.ok(likeCount);
-//    }
-//
-//    @PostMapping("/createLike")
-//    @PreAuthorize("hasAuthority('ADMIN') || hasAuthority('USER')")
-//    public ResponseEntity<?> createLike(@RequestBody LikeDTO likeDTO) {
-//        Optional<Like> check = likesService.findLikesByUserIdAndVideosId(likeDTO.getUserId(), likeDTO.getVideoId());
-//        if (check.isPresent()) {
-//            return ResponseEntity.badRequest().body("You liked it before");
-//        }
-//        Like newLikes = new Like();
-//        newLikes.setUser(userService.findById(likeDTO.getUserId()));
-//        newLikes.setVideos(videoService.findById(likeDTO.getVideoId()));
-//        return ResponseEntity.ok(likesService.save(newLikes));
-//    }
-//
-//    @DeleteMapping("/deleteLike/{id}")
-//    @PreAuthorize("hasAuthority('ADMIN') || hasAuthority('USER')")
-//    public void deleteLikes(@PathVariable Long id) {
-//        likesService.deleteById(id);
-//    }
 
     @PutMapping("/views/{id}")
     public ResponseEntity<?> views(@PathVariable Long id) {

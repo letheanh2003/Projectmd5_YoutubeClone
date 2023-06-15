@@ -23,6 +23,10 @@ public class Channel {
     private String chanel_name;
     @Column(name = "create_at")
     private Date create_at;
+
+    @Column(name = "Subscription")
+    private int Subscription;
+
     private int statusCode;
     @Column(name = "status")
     private boolean status;
