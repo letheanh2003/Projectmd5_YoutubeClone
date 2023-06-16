@@ -41,21 +41,19 @@ public class LikesController {
         if (video == null) {
             return ResponseEntity.badRequest().body("video not found");
         }
-        if (check.isPresent()) {
-            return ResponseEntity.badRequest().body("You liked it before");
+        if (!check.isPresent()) {
+            video.setLike(video.getLike() + 1);
+            videoService.save(video);
+            Like newLikes = new Like();
+            newLikes.setUser(userService.findById(likeDTO.getUserId()));
+            newLikes.setVideos(videoService.findById(likeDTO.getVideoId()));
+            likesService.save(newLikes);
+            return ResponseEntity.badRequest().body("Thank you for liking the video");
+        } else {
+            video.setLike(video.getLike() - 1);
+            likesService.deleteByLikeId(check.get().getId());
+            videoService.save(video);
+            return ResponseEntity.badRequest().body("You unliked the video");
         }
-        video.setLike(video.getLike() + 1);
-        videoService.save(video);
-
-        Like newLikes = new Like();
-        newLikes.setUser(userService.findById(likeDTO.getUserId()));
-        newLikes.setVideos(videoService.findById(likeDTO.getVideoId()));
-        return ResponseEntity.ok(likesService.save(newLikes));
-    }
-
-    @DeleteMapping("/deleteLike/{id}")
-    @PreAuthorize("hasAuthority('ADMIN') || hasAuthority('USER')")
-    public void deleteLikes(@PathVariable Long id) {
-        likesService.deleteById(id);
     }
 }

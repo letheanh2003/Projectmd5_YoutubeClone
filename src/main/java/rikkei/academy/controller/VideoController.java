@@ -48,7 +48,7 @@ public class VideoController {
     @PostMapping("/create")
     public ResponseEntity<?> createChannel(@RequestBody VideoRequest videoRequest) {
         Long channel_id = videoRequest.getChannel();
-        Long user_id = videoRequest.getChannel();
+        Long user_id = videoRequest.getUsers();
         Channel channel = channelService.findById(channel_id);
         Users users = userService.findById(user_id);
         Videos videos = Videos.builder()

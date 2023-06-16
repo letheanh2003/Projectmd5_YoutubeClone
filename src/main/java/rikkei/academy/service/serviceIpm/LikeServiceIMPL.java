@@ -47,6 +47,12 @@ public class LikeServiceIMPL implements ILikesService {
 
     @Override
     public Long countLikesByVideoId(Long videoId) {
-        return null;
+        return likeRepository.countLikesByVideoId(videoId);
     }
+
+    @Override
+    public void deleteByLikeId(Long id) {
+        likeRepository.deleteById(id);
+    }
+
 }
