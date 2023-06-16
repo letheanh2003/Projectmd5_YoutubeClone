@@ -48,4 +48,9 @@ public class SubscriptionServiceIMPL implements ISubscriptionService {
     public Long countSubscriptionByChannelId(Long channelId) {
         return subscriptionRepository.countSubscriptionByChannelId(channelId);
     }
+
+    @Override
+    public void deleteBySubId(Long id) {
+        subscriptionRepository.deleteById(id);
+    }
 }

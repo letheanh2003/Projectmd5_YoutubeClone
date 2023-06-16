@@ -43,19 +43,28 @@ public class SubscriptionController {
         if (channel == null) {
             return ResponseEntity.badRequest().body("Channel not found");
         }
-        if (check.isPresent()) {
-            return ResponseEntity.badRequest().body("You channel it before");
+        if (!check.isPresent()) {
+            channel.setSubscription(channel.getSubscription() + 1);
+            channelService.save(channel);
+            Subscription newSub = new Subscription();
+            newSub.setUser(userService.findById(subscriptionDTO.getUserId()));
+            newSub.setChannel(channelService.findById(subscriptionDTO.getChannelId()));
+            subscriptionService.save(newSub);
+            return ResponseEntity.badRequest().body("Thank you for subscribing to the channel.");
+
+        } else {
+            channel.setSubscription(channel.getSubscription() - 1);
+            subscriptionService.deleteBySubId(check.get().getId());
+            channelService.save(channel);
+            return ResponseEntity.badRequest().body("You have unsubscribed from the channel! ");
         }
-        channel.setSubscription(channel.getSubscription() + 1);
-        channelService.save(channel);
-        Subscription newSub = new Subscription();
-        newSub.setUser(userService.findById(subscriptionDTO.getUserId()));
-        newSub.setChannel(channelService.findById(subscriptionDTO.getChannelId()));
-        return ResponseEntity.ok(subscriptionService.save(newSub));
+
     }
-    @DeleteMapping("/deleteSub/{id}")
-    @PreAuthorize("hasAuthority('ADMIN') || hasAuthority('USER')")
-    public void deleteSub(@PathVariable Long id) {
-        subscriptionService.deleteById(id);
-    }
+
+
+//    @DeleteMapping("/deleteSub/{id}")
+//    @PreAuthorize("hasAuthority('ADMIN') || hasAuthority('USER')")
+//    public void deleteSub(@PathVariable Long id) {
+//        subscriptionService.deleteById(id);
+//    }
 }
