@@ -19,6 +19,8 @@ public class Like {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "like_id")
     private Long id;
+
+    private Boolean status;
     @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "video_id")

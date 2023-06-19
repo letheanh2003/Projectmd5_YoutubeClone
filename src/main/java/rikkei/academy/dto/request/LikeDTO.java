@@ -6,13 +6,12 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class LikeDTO {
     private Long id;
-
+    private Boolean status;
     private Long videoId;
 
     private Long userId;

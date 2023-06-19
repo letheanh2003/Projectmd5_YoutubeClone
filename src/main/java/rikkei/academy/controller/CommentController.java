@@ -33,7 +33,7 @@ public class CommentController {
     private IUserService userService;
 
     @GetMapping("/findAll")
-    @PreAuthorize("hasAuthority('ADMIN') || hasAuthority('USER')")
+    @PreAuthorize("hasAuthority('ADMIN') || hasAuthority('PM')")
     public ResponseEntity<List<Comment>> findAll() {
         List<Comment> comments = commentServices.findAll();
         if (comments.isEmpty()) {
@@ -44,7 +44,7 @@ public class CommentController {
     }
 
     @PostMapping("/createComment")
-    @PreAuthorize("hasAuthority('ADMIN') || hasAuthority('USER')")
+    @PreAuthorize("hasAuthority('ADMIN') || hasAuthority('PM') || hasAuthority('USER')")
     public ResponseEntity<?> createComment(@RequestBody CommentDTO commentDTO) {
         Long userId = commentDTO.getUserId();
         Users user = userService.findById(userId);
@@ -63,7 +63,7 @@ public class CommentController {
     }
 
     @PutMapping("/update/id")
-    @PreAuthorize("hasAuthority('ADMIN') || hasAuthority('USER')")
+    @PreAuthorize("hasAuthority('ADMIN') || hasAuthority('PM') || hasAuthority('USER')")
     public ResponseEntity<?> updateComment(@RequestBody CommentDTO commentDTO) {
         Long userId = commentDTO.getUserId();
         Users user = userService.findById(userId);
@@ -83,13 +83,14 @@ public class CommentController {
     }
 
     @DeleteMapping("deleteComment/{id}")
-    @PreAuthorize("hasAuthority('ADMIN') || hasAuthority('USER')")
+    @PreAuthorize("hasAuthority('ADMIN') || hasAuthority('PM') || hasAuthority('USER')")
     public ResponseEntity<?> deleteComment(@PathVariable("id") Long id) {
         commentServices.deleteById(id);
         return ResponseEntity.ok(new ResponseMessage("Deleted comment successfully"));
     }
 
     @GetMapping("/findCommentByUser/{id}")
+    @PreAuthorize("hasAuthority('ADMIN') || hasAuthority('PM')")
     public ResponseEntity<Iterable<Comment>> findCommentByUser(@PathVariable("id") Long id){
         Optional<Users> user = Optional.ofNullable(userService.findById(id));
         if (user.isPresent()) {

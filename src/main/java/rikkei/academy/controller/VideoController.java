@@ -46,6 +46,7 @@ public class VideoController {
     }
 
     @PostMapping("/create")
+    @PreAuthorize("hasAuthority('ADMIN') || hasAuthority('PM') || hasAuthority('USER')")
     public ResponseEntity<?> createChannel(@RequestBody VideoRequest videoRequest) {
         Long channel_id = videoRequest.getChannel();
         Long user_id = videoRequest.getUsers();
@@ -86,6 +87,7 @@ public class VideoController {
     }
 
     @PutMapping("/update")
+    @PreAuthorize("hasAuthority('ADMIN') || hasAuthority('PM') || hasAuthority('USER')")
     public ResponseEntity<?> updateChannel(@RequestBody VideoRequest videoRequest) {
         Long channel_id = videoRequest.getChannel();
         Channel channel = channelService.findById(channel_id);
@@ -103,6 +105,7 @@ public class VideoController {
     }
 
     @DeleteMapping("/delete/{id}")
+    @PreAuthorize("hasAuthority('ADMIN') || hasAuthority('PM') || hasAuthority('USER')")
     public ResponseEntity<?> deleteById(@PathVariable("id") Long id) {
         videoService.deleteById(id);
         return ResponseEntity.ok(new ResponseMessage("Delete successfully"));
@@ -110,6 +113,7 @@ public class VideoController {
 
 
     @PutMapping("/views/{id}")
+    @PreAuthorize("hasAuthority('ADMIN') || hasAuthority('PM') || hasAuthority('USER')")
     public ResponseEntity<?> views(@PathVariable Long id) {
         Videos video = videoService.findById(id);
         if (video != null) {

@@ -34,26 +34,68 @@ public class LikesController {
     }
 
     @PostMapping("/createLike")
-    @PreAuthorize("hasAuthority('ADMIN') || hasAuthority('USER')")
+    @PreAuthorize("hasAuthority('ADMIN') || hasAuthority('PM') || hasAuthority('USER')")
     public ResponseEntity<?> createLike(@RequestBody LikeDTO likeDTO) {
-        Optional<Like> check = likesService.findLikesByUserIdAndVideosId(likeDTO.getUserId(), likeDTO.getVideoId());
-        Videos video = videoService.findById(likeDTO.getVideoId());
-        if (video == null) {
-            return ResponseEntity.badRequest().body("video not found");
-        }
-        if (!check.isPresent()) {
-            video.setLike(video.getLike() + 1);
-            videoService.save(video);
-            Like newLikes = new Like();
-            newLikes.setUser(userService.findById(likeDTO.getUserId()));
-            newLikes.setVideos(videoService.findById(likeDTO.getVideoId()));
-            likesService.save(newLikes);
-            return ResponseEntity.badRequest().body("Thank you for liking the video");
+        Videos videos = videoService.findById(likeDTO.getVideoId());
+        Optional<Like> likesOptional = likesService.findLikesByUserIdAndVideosId(likeDTO.getUserId(), likeDTO.getVideoId());
+        if (likesOptional.isPresent()) {
+            // có bày tỏ cảm xúc r
+            Like likes = likesOptional.get();
+            if (likes.getStatus()) {
+                // đang like
+                likesService.deleteById(likes.getId());
+                videos.setLike(videos.getLike() - 1);
+                videoService.save(videos);
+            } else {
+                // đang dislike
+                likes.setStatus(true);
+                likesService.save(likes);
+                videos.setLike(videos.getLike() + 1);
+                videos.setDisLikes(videos.getDisLikes() - 1);
+                videoService.save(videos);
+            }
         } else {
-            video.setLike(video.getLike() - 1);
-            likesService.deleteByLikeId(check.get().getId());
-            videoService.save(video);
-            return ResponseEntity.badRequest().body("You unliked the video");
+            Like likes = Like.builder().user(userService.findById(likeDTO.getUserId()))
+                    .videos(videos)
+                    .status(true)
+                    .build();
+            likesService.save(likes);
+            videos.setLike(videos.getLike() + 1);
+            videoService.save(videos);
         }
+        return ResponseEntity.badRequest().body("Thank you for liking the video");
     }
+    @PostMapping("/createDislike")
+    @PreAuthorize("hasAuthority('ADMIN') || hasAuthority('PM') || hasAuthority('USER')")
+    public ResponseEntity<?> createDislike(@RequestBody LikeDTO likeDTO) {
+        Videos videos = videoService.findById(likeDTO.getVideoId());
+        Optional<Like> likesOptional = likesService.findLikesByUserIdAndVideosId(likeDTO.getUserId(), likeDTO.getVideoId());
+        if (likesOptional.isPresent()) {
+            // có bày tỏ cảm xúc r
+            Like likes = likesOptional.get();
+            if (!likes.getStatus()) {
+                // đang like
+                likesService.deleteById(likes.getId());
+                videos.setDisLikes(videos.getDisLikes() - 1);
+                videoService.save(videos);
+            } else {
+                // đang dislike
+                likes.setStatus(false);
+                likesService.save(likes);
+                videos.setLike(videos.getLike() - 1);
+                videos.setDisLikes(videos.getDisLikes() + 1);
+                videoService.save(videos);
+            }
+        } else {
+            Like likes = Like.builder().user(userService.findById(likeDTO.getUserId()))
+                    .videos(videos)
+                    .status(false)
+                    .build();
+            likesService.save(likes);
+            videos.setDisLikes(videos.getDisLikes() + 1);
+            videoService.save(videos);
+        }
+        return ResponseEntity.badRequest().body("You dislike the video");
+    }
+
 }

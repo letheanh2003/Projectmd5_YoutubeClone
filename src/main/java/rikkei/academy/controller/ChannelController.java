@@ -35,6 +35,7 @@ public class ChannelController {
     }
 
     @PostMapping("/create")
+    @PreAuthorize("hasAuthority('ADMIN') || hasAuthority('PM') || hasAuthority('USER')")
     public ResponseEntity<?> createChannel(@RequestBody ChannelRequest channelRequest) {
         Long user_id = channelRequest.getUser();
         Users users = userService.findById(user_id);
@@ -54,6 +55,7 @@ public class ChannelController {
     }
 
     @PostMapping("/update")
+    @PreAuthorize("hasAuthority('ADMIN') || hasAuthority('PM') || hasAuthority('USER')")
     public ResponseEntity<?> updateChannel(@RequestBody ChannelRequest channelRequest) {
         Long user_id = channelRequest.getUser();
         Users users = userService.findById(user_id);
@@ -72,7 +74,7 @@ public class ChannelController {
     }
 
     @DeleteMapping("/delete/{id}")
-    @PreAuthorize("hasAnyAuthority('PM', 'ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN') || hasAuthority('PM') || hasAuthority('USER')")
     public ResponseEntity<?> deleteById(@PathVariable("id") Long id) {
         channelService.deleteById(id);
         return ResponseEntity.ok(new ResponseMessage("Delete successfully"));

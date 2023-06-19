@@ -1,7 +1,9 @@
 package rikkei.academy.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -42,63 +44,55 @@ public class AuthController {
     private PasswordEncoder encoder;
 
     @PostMapping("/signin")
-    public ResponseEntity<JwtUserResponse> login(@RequestBody FormLogin formLogin){
+    public ResponseEntity<JwtUserResponse> login(@RequestBody FormLogin formLogin) {
         Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(formLogin.getUserName(),formLogin.getPassword())
+                new UsernamePasswordAuthenticationToken(formLogin.getUserName(), formLogin.getPassword())
         );
         SecurityContextHolder.getContext().setAuthentication(authentication);
         // lấy ra đối tượng đang làm việc hiện tại
-
-
-
         CustomUserDetails customUserDetail = (CustomUserDetails) authentication.getPrincipal();
         // tạo token bằng jwt
         String token = tokenProvider.createToken(customUserDetail);
         List<String> roles = customUserDetail.getAuthorities().stream().map(
                 role -> role.getAuthority()
         ).collect(Collectors.toList());
-        JwtUserResponse response = new JwtUserResponse(customUserDetail.getUsername(), customUserDetail.getEmail(),token,roles);
+        JwtUserResponse response = new JwtUserResponse(customUserDetail.getUsername(), customUserDetail.getEmail(), token, roles);
         return ResponseEntity.ok(response);
     }
+
     @PostMapping("/signup")
-    public ResponseEntity<ResponseMessage> register(@RequestBody FormRegister formRegister){
+    public ResponseEntity<ResponseMessage> register(@RequestBody FormRegister formRegister) {
         try {
-            if(userService.existsByUserName(formRegister.getUserName())){
+            if (userService.existsByUserName(formRegister.getUserName())) {
                 return ResponseEntity.ok(new ResponseMessage("Username is existed"));
             }
-            if(userService.existsByEmail(formRegister.getEmail())){
+            if (userService.existsByEmail(formRegister.getEmail())) {
                 return ResponseEntity.ok(new ResponseMessage("Email is existed"));
             }
 
             Set<String> roles = formRegister.getRoles();
             Set<Roles> listRoles = new HashSet<>();
-            if (roles== null||roles.isEmpty()){
+            if (roles == null || roles.isEmpty()) {
                 listRoles.add(roleService.findByRoleName(RoleName.USER));
-            }else {
-                roles.forEach(role->{
-                    switch (role){
+            } else {
+                roles.forEach(role -> {
+                    switch (role) {
                         case "admin":
                             listRoles.add(roleService.findByRoleName(RoleName.ADMIN));
                         case "pm":
                             listRoles.add(roleService.findByRoleName(RoleName.PM));
                         case "user":
                             listRoles.add(roleService.findByRoleName(RoleName.USER));
-
                     }
                 });
             }
-            Users user = new Users(formRegister.getUserName(), formRegister.getEmail(),encoder.encode(formRegister.getPassword()), listRoles);
+            Users user = new Users(formRegister.getUserName(), formRegister.getEmail(), encoder.encode(formRegister.getPassword()), listRoles);
             userService.save(user);
             return ResponseEntity.ok(new ResponseMessage("Register success"));
-        }catch (Exception e) {
+        } catch (Exception e) {
             System.err.println(e.getMessage());
             return null;
         }
     }
-    @PostMapping("/logout")
-    public ResponseEntity<ResponseMessage>logout(HttpServletRequest request){
-        String token = request.getHeader("Authorization");
 
-        return ResponseEntity.ok(new ResponseMessage("Logout success"));
-    }
 }

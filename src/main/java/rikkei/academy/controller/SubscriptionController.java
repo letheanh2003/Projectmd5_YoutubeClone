@@ -29,14 +29,14 @@ public class SubscriptionController {
     private ISubscriptionService subscriptionService;
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAuthority('ADMIN') || hasAuthority('USER')")
+    @PreAuthorize("hasAuthority('ADMIN') || hasAuthority('PM')")
     public ResponseEntity<?> findSubscriptionByChannelId(@PathVariable Long id) {
         Long SubCount = subscriptionService.countSubscriptionByChannelId(id);
         return ResponseEntity.ok(SubCount);
     }
 
     @PostMapping("/createSub")
-    @PreAuthorize("hasAuthority('ADMIN') || hasAuthority('USER')")
+    @PreAuthorize("hasAuthority('ADMIN') || hasAuthority('PM') || hasAuthority('USER')")
     public ResponseEntity<?> createSud(@RequestBody SubscriptionDTO subscriptionDTO) {
         Optional<Subscription> check = subscriptionService.findSubscriptionByUserIdAndChannelId(subscriptionDTO.getUserId(), subscriptionDTO.getChannelId());
         Channel channel = channelService.findById(subscriptionDTO.getChannelId());
