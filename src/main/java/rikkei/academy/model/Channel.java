@@ -1,5 +1,6 @@
 package rikkei.academy.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -20,7 +21,7 @@ public class Channel {
     @Column(name = "channel_id")
     private Long id;
     @Column(name = "chanel_name")
-    private String chanel_name;
+    private String chanelName;
     @Column(name = "create_at")
     private Date create_at;
 
@@ -31,6 +32,7 @@ public class Channel {
     @Column(name = "status")
     private boolean status;
     @OneToOne
+    @JsonIgnore
     @JoinColumn(name = "user_id")
     private Users user;
 

@@ -12,10 +12,10 @@ import rikkei.academy.model.Channel;
 import rikkei.academy.model.Users;
 import rikkei.academy.service.IChannelService;
 import rikkei.academy.service.IUserService;
+import rikkei.academy.service.serviceIpm.ChannelServiceIMPL;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 
 @AllArgsConstructor
 @RestController
@@ -24,6 +24,8 @@ import java.util.Optional;
 public class ChannelController {
     @Autowired
     private IChannelService channelService;
+    @Autowired
+    private ChannelServiceIMPL channelServiceIMPL;
     @Autowired
     private IUserService userService;
 
@@ -42,12 +44,12 @@ public class ChannelController {
         if (channelService.existsChannelByUser(users)) {
             return ResponseEntity.badRequest().body(new ResponseMessage("User already has a channel"));
         }
-
         Channel channel = Channel.builder()
-                .chanel_name(channelRequest.getChanel_name())
+                .chanelName(channelRequest.getChanel_name())
                 .user(users)
                 .create_at(new Date())
                 .build();
+
         channel.setStatusCode(0);
         channel.setStatus(true);
         channelService.save(channel);
@@ -62,7 +64,7 @@ public class ChannelController {
         Channel channel = Channel
                 .builder()
                 .id(channelRequest.getChannel_id())
-                .chanel_name(channelRequest.getChanel_name())
+                .chanelName(channelRequest.getChanel_name())
                 .create_at(channelRequest.getCreate_at())
                 .statusCode(channelRequest.getStatusCode())
                 .status(channelRequest.isStatus())
@@ -80,5 +82,31 @@ public class ChannelController {
         return ResponseEntity.ok(new ResponseMessage("Delete successfully"));
     }
 
+    @GetMapping("/channel/id")
+    @PreAuthorize("hasAuthority('ADMIN') || hasAuthority('PM') || hasAuthority('USER')")
+    public ResponseEntity<?> getChannel(@PathVariable("id") Long channelId) {
+        Channel chan = channelService.findById(channelId);
+        if (chan == null) {
+            return ResponseEntity.notFound().build();
+        }
+        switch (chan.getStatusCode()) {
+            case 1:
+                return ResponseEntity.ok("Violation Alert First time warning");
+            case 2:
+                return ResponseEntity.ok("Second warning violation");
+            case 3:
+                return ResponseEntity.ok("Final warning violation");
+            case 4:
+                chan.setStatus(false);
+                return ResponseEntity.ok("Your channel is locked and can't post videos.");
+        }
+        // Trả về thông tin kênh nếu không có vấn đề
+        return ResponseEntity.ok(chan);
+    }
 
+    @GetMapping("/searchChannel/{channelName}")
+    @PreAuthorize("hasAuthority('ADMIN') || hasAuthority('PM') || hasAuthority('USER')")
+    public List<Channel> searchChannel(@PathVariable("channelName") String channelName) {
+        return channelServiceIMPL.findByChanelNameContaining(channelName);
+    }
 }

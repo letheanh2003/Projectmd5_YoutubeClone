@@ -61,7 +61,7 @@ public class VideoController {
                 .create_at(new Date())
                 .build();
         int status = channel.getStatusCode();
-        if (status != 4) {
+        if (status != 3) {
             switch (status) {
                 case 1:
                     videos.setStatus(true);
@@ -77,10 +77,9 @@ public class VideoController {
                     return ResponseEntity.ok("Final warning.Create new video successfully");
                 case 4:
                     videos.setStatus(false);
-                    return ResponseEntity.badRequest().body("Account locked.");
+                    return ResponseEntity.badRequest().body("Channel locked.");
             }
         }
-
         videos.setStatus(true);
         videoService.save(videos);
         return ResponseEntity.ok("Create new video successfully");
@@ -122,5 +121,9 @@ public class VideoController {
             return ResponseEntity.ok(new ResponseMessage("Video increased by 1 view"));
         }
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("video not found");
+    }
+    @GetMapping("/search/{title}")
+    public List<Videos>search(@PathVariable("title") String title){
+        return videoService.findByTitleContaining(title);
     }
 }

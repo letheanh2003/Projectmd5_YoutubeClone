@@ -33,4 +33,9 @@ public class VideoServiceIMPL implements IVideoService {
     public Videos findById(Long id) {
         return videoRepository.findById(id).get();
     }
+
+    @Override
+    public List<Videos> findByTitleContaining(String title) {
+        return videoRepository.findByTitleContaining(title);
+    }
 }

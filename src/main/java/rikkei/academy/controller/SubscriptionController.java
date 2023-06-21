@@ -60,11 +60,4 @@ public class SubscriptionController {
         }
 
     }
-
-
-//    @DeleteMapping("/deleteSub/{id}")
-//    @PreAuthorize("hasAuthority('ADMIN') || hasAuthority('USER')")
-//    public void deleteSub(@PathVariable Long id) {
-//        subscriptionService.deleteById(id);
-//    }
 }

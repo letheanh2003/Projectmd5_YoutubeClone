@@ -21,6 +21,12 @@ public class ChannelServiceIMPL implements IChannelService {
     }
 
     @Override
+    public List<Channel> findByChanelNameContaining(String channelName) {
+        return channelRepository.findByChanelNameContaining(channelName);
+    }
+
+
+    @Override
     public List<Channel> findAll() {
         return channelRepository.findAll();
     }
@@ -39,4 +45,5 @@ public class ChannelServiceIMPL implements IChannelService {
     public Channel findById(Long id) {
         return channelRepository.findById(id).get();
     }
+
 }
